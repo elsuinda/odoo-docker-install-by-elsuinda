@@ -2,16 +2,15 @@ version: '3.1'
 
 services:
   db:
-    image: mariadb:10.5
+    image: postgres:13
     container_name: odoo-db
-    restart: always
     environment:
-      MYSQL_DATABASE: ${ODOO_DB_NAME}
-      MYSQL_USER: ${ODOO_DB_USER}
-      MYSQL_PASSWORD: ${ODOO_DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: root123
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - odoo-db-data:/var/lib/mysql
+      - odoo-db-data:/var/lib/postgresql/data
+    restart: always
 
   odoo:
     image: odoo:17
@@ -21,11 +20,12 @@ services:
     ports:
       - "${ODOO_PORT}:8069"
     environment:
-      - HOST=db
+      - HOST=${ODOO_DB_HOST}
       - USER=${ODOO_DB_USER}
       - PASSWORD=${ODOO_DB_PASSWORD}
     volumes:
       - odoo-web-data:/var/lib/odoo
+    restart: always
 
 volumes:
   odoo-db-data:
