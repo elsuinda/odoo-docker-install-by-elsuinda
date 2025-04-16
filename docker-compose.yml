@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  db:
+    image: mariadb:10.5
+    container_name: odoo-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${ODOO_DB_NAME}
+      MYSQL_USER: ${ODOO_DB_USER}
+      MYSQL_PASSWORD: ${ODOO_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - odoo-db-data:/var/lib/mysql
+
+  odoo:
+    image: odoo:17
+    container_name: odoo-app
+    depends_on:
+      - db
+    ports:
+      - "${ODOO_PORT}:8069"
+    environment:
+      - HOST=db
+      - USER=${ODOO_DB_USER}
+      - PASSWORD=${ODOO_DB_PASSWORD}
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+
+volumes:
+  odoo-db-data:
+  odoo-web-data:
